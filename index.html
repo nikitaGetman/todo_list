@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+
+    <!-- версия для разработки, отображает полезные предупреждения в консоли -->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <!-- Axios -->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <link rel="stylesheet" href="main.css">
+
+    <title>Vue</title>
+</head>
+<body>
+    
+    <main>
+        <div id="app">
+            <form v-on:submit.prevent="addTodo">
+                <input type="text" placeholder="New task" v-model="nextTodoText">
+                <button v-bind:disabled="nextTodoText.trim() == ''">Push</button>
+            </form>
+            
+            <transition-group name="list" tag="ul">
+                <li 
+                    is="todo-item"
+                    v-for="(todo, todoId) in todoList"
+                    v-if="todo.isActive || showInactive" 
+                    v-bind:data-id="todoId"
+                    v-bind="todo"
+                    v-bind:key="todo.id"                    
+                    v-bind:index="todoId + 1"
+
+                    v-on:remove="deleteTodo(todoId)"
+                    v-on:toggle="toggleTodo(todoId)" 
+                ></li>
+
+                <li v-if="loading" class="loader" :key="0">
+                    <i class="fas fa-spinner fa-pulse"></i>
+                </li>
+
+                <li v-else-if="errored" class="errorer" :key="1">
+                    <a href="#" @click.stop.prevent="getNewData">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Something went wrong<br>try to refresh the page later</p>
+                    </a>
+                </li>
+
+                <li v-else class="more" :key="2">
+                    <a href="#" @click.stop.prevent="getNewData"><i class="fas fa-plus"></i></a>
+                </li>
+
+            </transition-group>
+            
+            
+
+            
+
+            <footer>
+                <button v-on:click.prevent="showInactive = !showInactive">
+                    <i class="far fa-eye" v-if="showInactive"></i>
+                    <i class="far fa-eye-slash" v-else></i>
+                </button>
+            </footer>
+
+        </div>
+
+        <p id="author">Designed and Coded by <a href="https://github.com/nikitaGetman" target="_blank" title="My GitHub">Nikita Getman</a></p>
+    </main>
+
+
+
+
+    <script>
+
+        Vue.component('todoItem', {
+            props: {
+                text: {
+                    type: String,
+                    required: true
+                },
+                isActive: {
+                    type: Boolean,
+                    default: true
+                },
+                index: {
+                    type: Number,
+                    default: 0
+                }
+            },
+            template: '\
+                \
+                    <li class="item" \
+                        v-bind:class="{inactive : !isActive}">\
+                            <p class="text">\
+                                {{ index }}. {{ text }}\
+                            </p>\
+                            <div class="controls">\
+                            <button class="toggle-btn" v-on:click="$emit(\'toggle\')"  title="Toggle">\
+                                    <i v-if="isActive" class="fas fa-toggle-off"></i>\
+                                    <i v-else class="fas fa-toggle-on"></i>\
+                            </button>\
+                            <button class="delete-btn" v-on:click="$emit(\'remove\')"  title="Delete">\
+                                    <i class="fas fa-trash-alt"></i>\
+                            </button>\
+                            </div>\
+                    </li>\
+                '
+        });
+
+
+            let app = new Vue({
+            el: '#app',
+            data: {
+                nextTodoText: '',
+                nextTodoId: 3,
+                showInactive: true,
+                todoList: [],
+                rowInfo: null,
+                loading: false,
+                errored: false,
+                offset: 15
+            },
+            methods:{
+                addTodo: function(todoText, active = true){
+
+                    if(typeof todoText == undefined || typeof todoText == 'object'){
+                        todoText = this.nextTodoText;
+                        this.nextTodoText = '';
+                    }
+
+                    this.todoList.push({
+                        text: todoText.trim(), 
+                        isActive: active,
+                        id: this.nextTodoId++
+                    });
+
+                    
+                },
+                deleteTodo: function(id){
+                    this.todoList.splice(id, 1);
+                },
+                toggleTodo: function(id){
+                    this.todoList[id].isActive = ! this.todoList[id].isActive;
+                },
+                getNewData: function(amount){
+                    
+                    this.loading = true;
+
+
+                    let callback = function(vm, err = true, data = []){
+                            // for visualisation
+                        setTimeout(function(){
+                            if(err){
+                                vm.loading = false;
+                                vm.errored = true;
+                                return false;
+                            }
+                            else{
+                                vm.loading = false;
+                                vm.rowInfo = data;
+                                
+                                let from = vm.todoList.length,
+                                    to   = from + vm.offset;
+
+                                let newData = data.slice(from, to);
+                                if(newData.length === 0){
+                                    vm.loading = false;
+                                    vm.errored= true;
+                                }
+
+                                newData.forEach(function(e) {
+                                    vm.addTodo(e.title, e.completed);
+                                });
+
+                                
+                            }
+                        }, 2000);
+                    };
+                    
+                    this.rowInfo ? callback(this, false, this.rowInfo) : requestData(this, callback);
+                },
+            
+            },
+            mounted() {
+                
+            }
+        });
+
+        
+        let requestData = function(context, cb){
+            let data = null;
+            let error = false;
+
+            axios
+                .get('http://jsonplaceholder.typicode.com/todos')
+                .then(response => {
+                    data = response.data;
+                })
+                .catch(error => {
+                    error = true;
+                })
+                .finally(() => ( cb(context, error, data) ));
+
+        }
+
+    </script>
+
+</body>
+</html>

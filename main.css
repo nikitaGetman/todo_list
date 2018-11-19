@@ -1,0 +1,297 @@
+*{
+    padding: 0;
+    margin: 0;
+}
+:focus{
+    outline: none;
+}
+
+main{
+    position: relative;
+
+    width: 100vw;
+    height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    background-color: #91AA9D;
+}
+
+#app{
+    position: relative;
+
+    padding: 15px;
+    padding-bottom: 35px;
+    min-height: 300px;
+    font-size: 16px;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #3E606F;
+    color: #FCFFF5;
+    border-radius: 8px;
+
+}
+#app form{
+    margin-bottom: 20px;
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+}
+#app form input{
+    width: 400px;
+    height: 30px;
+    margin-right: 10px;
+    padding: 10px;
+    padding-bottom: 5px;
+    font-size: 2em;
+    border: none;
+    border-bottom: 5px solid rgb(175, 182, 158);
+    transition: all .2s;
+    -webkit-transition: all .2s;
+    -moz-transition: all .2s;
+    -ms-transition: all .2s;
+    -o-transition: all .2s;
+
+    background-color: #3E606F;
+    color: #FCFFF5;
+}
+input::placeholder{ color: rgba(252, 255, 245, 0.212)}
+#app form input:focus{
+    border-color: rgb(217, 228, 194);
+}
+
+#app form button{
+    width: 100px;
+    background-color: #496e7e;
+    color: #c5c7c1;
+    border: none;
+    font-size: 1.5em;
+    text-transform: uppercase;
+    transition: all 0.2s;
+    -webkit-transition: all 0.2s;
+    -moz-transition: all 0.2s;
+    -ms-transition: all 0.2s;
+    -o-transition: all 0.2s;
+}
+#app form button:hover{
+    cursor: pointer;
+    background-color: #678997;
+    color: #334f5c;
+    border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    -ms-border-radius: 4px;
+    -o-border-radius: 4px;
+}
+#app form button:active{
+    border-top: 1px solid #35525e;
+    border-left: 1px solid #35525e;
+    transition: all .1s;
+    -webkit-transition: all .1s;
+    -moz-transition: all .1s;
+    -ms-transition: all .1s;
+    -o-transition: all .1s;
+}
+#app form button[disabled]{
+    background-color: #3e606f;
+    color: #66828c;
+    transition: all .5s;
+    -webkit-transition: all .5s;
+    -moz-transition: all .5s;
+    -ms-transition: all .5s;
+    -o-transition: all .5s;
+}
+
+#app ul{
+    margin: 0 10px 10px 0;
+    list-style: none;
+
+    font: 400 1.8em Arial;
+
+    height: 400px;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    position: relative;
+}
+#app ul::-webkit-scrollbar{
+    width: 5px;
+    background-color: #4f7281;
+}
+#app ul::-webkit-scrollbar-thumb{
+    /* width: 6px; */
+    background-color: #90afbc;
+}
+#app ul::-webkit-scrollbar-corner{
+    display: none;
+}
+#app ul li{
+    margin: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+#app ul .loader{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    min-height: 50px;
+    left: 0;
+    right: 0;
+}
+#app ul .more{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+
+    min-height: 50px;
+    left: 0;
+    right: 0;
+}
+#app ul .more a{
+    text-decoration: none;
+    color: inherit;
+}
+#app ul .errorer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-size: 0.7em;
+    
+    min-height: 50px;
+    left: 0;
+    right: 0;
+}
+#app ul .errorer a {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+}
+#app ul .errorer i{
+    font-size: 1.5em;
+    margin-right: 20px;
+}
+#app ul li .text{
+    width: 410px;
+    padding: 0 10px;
+    border-bottom: 2px solid #4f7281;
+
+    transition: all .5s;
+    -webkit-transition: all .5s;
+    -moz-transition: all .5s;
+    -ms-transition: all .5s;
+    -o-transition: all .5s;
+}
+#app ul .inactive .text{
+    color: #8da6b0;
+    text-decoration: line-through;
+}
+#app ul li .controls{
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+#app ul li .controls button{
+    max-height: 30px;
+
+    background-color: transparent;
+    border: none;
+    font-size: 0.8em;
+    color: #7f9ca6;
+    margin-left: 10px;
+    transition: all .2s ;
+    -webkit-transition: all .2s ;
+    -moz-transition: all .2s ;
+    -ms-transition: all .2s ;
+    -o-transition: all .2s ;
+}
+#app ul li .controls button:hover{
+    cursor: pointer;
+    color: #a4bec7;
+}
+
+#app footer{
+    position: absolute;
+    bottom: 10px;
+    left: 20px;
+    display: flex;
+    justify-content: flex-end;
+}
+#app footer button{
+    max-height: 30px;
+
+    background-color: transparent;
+    border: none;
+    font-size: 1.3em;
+    color: #7f9ca6;
+    margin-left: 10px;
+    transition: all .2s ;
+    -webkit-transition: all .2s ;
+    -moz-transition: all .2s ;
+    -ms-transition: all .2s ;
+    -o-transition: all .2s ;
+}
+#app footer button:hover{
+    cursor: pointer;
+    color: #a4bec7;
+}
+
+#author{
+    font-family: 'Courier New', Courier, monospace;
+    margin-top: 8px;
+}
+#author a{
+    color: inherit;
+}
+
+/* Animations */
+/* shittiest decision ever */
+/* just for beautiful fade out */
+@keyframes fade-out{
+    0%{
+        opacity: 1;
+    }
+
+    50%{
+        opacity: 0;
+        top: unset;
+    }
+    60%{
+        top: 50%;
+    }
+
+    100%{
+        opacity: 0;        
+        top: 50%;
+    }
+}
+
+.list-enter-active, .list-leave-active {
+    transition: all 0.2s;
+}
+.list-leave-to {
+    opacity: 0;
+    position: absolute;
+}
+.list-enter{
+    opacity: 0;
+    transform: translateX(50px);
+}
+.list-leave-active {
+    position: absolute;
+    animation: fade-out 0.3s;
+}
+.inactive.list-leave-active{
+    animation: fade-out 0.3s;
+}
+.list-move{
+    transition: all 0.3s ;
+    
+}
