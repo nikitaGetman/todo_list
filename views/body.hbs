@@ -1,0 +1,64 @@
+<main>
+    <div id="app">
+        <p>{{nextTodoId}}</p>
+        
+        <form v-on:submit.prevent="addTodo">
+            <input type="text" placeholder="New task" v-model="nextTodoText">
+            <button v-bind:disabled="nextTodoText.trim() == ''">Push</button>
+        </form>
+        
+        <transition-group name="list" tag="ul">
+            <li 
+                is="todo-item"
+                v-for="(todo, todoId) in todoList"
+                v-if="todo.isActive || showInactive" 
+                v-bind:data-id="todoId"
+                v-bind="todo"
+                v-bind:key="todo.id"                    
+                v-bind:index="todoId + 1"
+
+                v-on:remove="deleteTodo(todoId)"
+                v-on:toggle="toggleTodo(todoId)" 
+            ></li>
+
+
+            
+
+        </transition-group>
+
+        <footer>
+            <button v-on:click.prevent="showInactive = !showInactive">
+                <i class="far fa-eye" v-if="showInactive"></i>
+                <i class="far fa-eye-slash" v-else></i>
+            </button>
+
+
+            <span class="login-info">
+
+                <span v-if="! logged" >
+                    <a href="#" v-on:click.prevent="login">Sign in</a>
+                    or
+                    <a href="#">register</a>
+                </span>
+
+                <span v-else class="user">
+                    Logged as: 
+                    
+                    <button v-on:click.prevent="signout">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </span>
+
+            </span>
+            
+            
+        </footer>
+
+    </div>
+
+    <p id="author">Designed and Coded by <a href="https://github.com/nikitaGetman" target="_blank" title="My GitHub">Nikita Getman</a></p>
+</main>
+
+
+
+<script src="../javascript/script.js"></script>

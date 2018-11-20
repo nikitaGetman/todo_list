@@ -133,16 +133,32 @@ input::placeholder{ color: rgba(252, 255, 245, 0.212)}
     justify-content: space-between;
 }
 
-#app ul .loader{
+#app ul .login{
     display: flex;
     justify-content: center;
     align-items: center;
 
     min-height: 50px;
-    left: 0;
-    right: 0;
+    /* left: 0; */
+    /* right: 0; */
+
+
 }
-#app ul .more{
+#app ul .login button{
+
+    padding: 8px 24px;
+
+    background-color: #334f5c;
+    color: #8da6b0;
+
+    border: none;
+
+}
+#app ul .login button:hover {
+    cursor: pointer;
+
+}
+/* #app ul .more{
     display: flex;
     justify-content: center;
     align-items: center;
@@ -177,7 +193,7 @@ input::placeholder{ color: rgba(252, 255, 245, 0.212)}
 #app ul .errorer i{
     font-size: 1.5em;
     margin-right: 20px;
-}
+} */
 #app ul li .text{
     width: 410px;
     padding: 0 10px;
@@ -221,8 +237,13 @@ input::placeholder{ color: rgba(252, 255, 245, 0.212)}
     position: absolute;
     bottom: 10px;
     left: 20px;
+    right: 20px;
+
+    height: 30px;
+
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
+    align-items: center;
 }
 #app footer button{
     max-height: 30px;
@@ -238,6 +259,25 @@ input::placeholder{ color: rgba(252, 255, 245, 0.212)}
     -ms-transition: all .2s ;
     -o-transition: all .2s ;
 }
+#app footer .login-info {
+    padding: 8px 24px;
+
+    /* background-color: #334f5c; */
+    color: #8aa0a8;
+
+    border: none;
+}
+#app footer .login-info a{
+    color: #a4bec7;
+
+    text-decoration: none;
+}
+#app footer .login-info a:hover {
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+
 #app footer button:hover{
     cursor: pointer;
     color: #a4bec7;
