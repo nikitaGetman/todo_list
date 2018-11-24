@@ -158,42 +158,28 @@ input::placeholder{ color: rgba(252, 255, 245, 0.212)}
     cursor: pointer;
 
 }
-/* #app ul .more{
-    display: flex;
+#app .popup{
+    margin: 0 10px 10px 0;
+
+    height: 400px;
+
+}
+#app .popup form{
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     
+    padding-top: 40px;
+}
+#app .popup form *{
+    margin: 6px 0;
+}
+#app .popup form button{
+    width: unset;
+    margin-top: 20px;
+    padding: 10px 30px;
+}
 
-    min-height: 50px;
-    left: 0;
-    right: 0;
-}
-#app ul .more a{
-    text-decoration: none;
-    color: inherit;
-}
-#app ul .errorer {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    font-size: 0.7em;
-    
-    min-height: 50px;
-    left: 0;
-    right: 0;
-}
-#app ul .errorer a {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-decoration: none;
-    color: inherit;
-}
-#app ul .errorer i{
-    font-size: 1.5em;
-    margin-right: 20px;
-} */
 #app ul li .text{
     width: 410px;
     padding: 0 10px;
@@ -275,6 +261,9 @@ input::placeholder{ color: rgba(252, 255, 245, 0.212)}
 #app footer .login-info a:hover {
     cursor: pointer;
     text-decoration: underline;
+}
+#app footer .login-info .username{
+    color: #a4bec7;
 }
 
 

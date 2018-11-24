@@ -36,110 +36,169 @@ Vue.component('todoItem', {
 });
 
 
-    let app = new Vue({
+
+let app = new Vue({
     el: '#app',
     data: {
         nextTodoText: '',
-        nextTodoId: 3,
+        nextTodoId: 0,
         showInactive: true,
         todoList: [],
-        rowInfo: null,
-        loading: false,
-        errored: false,
-        offset: 15,
+
+        loginView: false,
+        registerView: false,
         logged: false,
-        user: null,
-        username: 'kdfepadk'
+        user: {},
+        loginForm: {
+            login: "",
+            password: "",
+            infoText: ""
+        },
+        registerForm: {
+            login: "",
+            password: "",
+            passwordConfirm: "",
+            infoText: ""
+        }
+    },
+    computed: {
+        loginFormValidation: function(){
+            if(this.loginForm.login.length > 0 && this.loginForm.password.length > 0){
+                return true;
+            }else{
+                return false;
+            }
+        },
+        registerFormValidation: function(){
+            if(this.registerForm.login.length == 0 && this.registerForm.password.length == 0){
+                this.registerForm.infoText = "";
+                return false;
+            }
+            if(this.registerForm.login.length < 3){
+                this.registerForm.infoText = "Login length must be at least 3 characters";
+                return false;
+            }
+            if(this.registerForm.password.length < 6){
+                this.registerForm.infoText = "The password must be at least 6 characters long";
+                return false;
+            }
+            if(this.registerForm.password !== this.registerForm.passwordConfirm){
+                this.registerForm.infoText = "Passwords must be the same";
+                return false;
+            }
+
+            this.registerForm.infoText = "";
+            return true;
+        }
     },
     methods:{
-        addTodo: function(todoText, active = true){
+        addTodo: function(todoText, active = true, id = null){
 
             if(typeof todoText == undefined || typeof todoText == 'object'){
                 todoText = this.nextTodoText;
                 this.nextTodoText = '';
             }
 
+            if(id == null) {
+                id = this.nextTodoId++;
+            }
+            else{
+                this.nextTodoId = id + 1;
+            }
+
             this.todoList.push({
                 text: todoText.trim(), 
                 isActive: active,
-                id: this.nextTodoId++
+                id
             });
 
-            
+            DS.saveData(this.user, this.todoList);
         },
         deleteTodo: function(id){
             this.todoList.splice(id, 1);
+
+            DS.saveData(this.user, this.todoList);
         },
         toggleTodo: function(id){
             this.todoList[id].isActive = ! this.todoList[id].isActive;
-        },
-        login: function(){
-            this.logged = true;
-            this.user = 'Nikita User';
             
-            console.log('signed as ', this.user);
+            DS.saveData(this.user, this.todoList);
+        },
+        loginFormSubmit: function(){
+            console.log(this.loginForm.login);
+            console.log(this.loginForm.password);
+        },
+        registerFormSubmit: function(){
+            console.log(this.registerForm.login);
+            console.log(this.registerForm.password);
+            console.log(this.registerForm.passwordConfirm);
+        },
+        openLoginForm: function(){
+            if( ! this.loginView ){
+                this.loginView = true;
+
+                if(this.registerView){
+                    this.closeRegisterForm();
+                }
+            }
+            else{
+                this.closeLoginForm();
+            }
+        },
+        closeLoginForm: function(){
+            this.loginView = false;
+
+            this.loginForm.login = "";
+            this.loginForm.password = "";
+        },
+        openSignInForm: function(){
+            if( ! this.registerView ){
+                this.registerView = true;
+
+                if(this.loginView){
+                    this.closeLoginForm();
+                }
+            }
+            else{   
+                this.closeRegisterForm();
+            }   
+        },
+        closeRegisterForm: function(){
+            this.registerView = false;
+
+            this.registerForm.login = "";
+            this.registerForm.password = "";
+            this.registerForm.passwordConfirm = "";
+        },
+        openTodoView: function(){
+            this.closeLoginForm();
+            this.closeRegisterForm();
         },
         signout: function(){
-            this.user = null;
+            this.user = {};
             this.logged = false;
+            this.openTodoView();
         },
-        getNewData: function(amount){
-            
-            this.loading = true;
-
-
-            let callback = function(vm, err = true, data = []){
-                    // for visualisation
-                setTimeout(function(){
-                    if(err){
-                        vm.loading = false;
-                        vm.errored = true;
-                        return false;
-                    }
-                    else{
-                        vm.loading = false;
-                        vm.rowInfo = data;
-                        
-                        let from = vm.todoList.length,
-                            to   = from + vm.offset;
-
-                        let newData = data.slice(from, to);
-                        if(newData.length === 0){
-                            vm.loading = false;
-                            vm.errored= true;
-                        }
-
-                        newData.forEach(function(e) {
-                            vm.addTodo(e.title, e.completed);
-                        });
-
-                        
-                    }
-                }, 2000);
-            };
-            
-            this.rowInfo ? callback(this, false, this.rowInfo) : requestData(this, callback);
-        },
-    
     },
     mounted() {
-        
+        console.log('mounted');
+
+        // DS.clearStorage();
+        let user = DS.getUser();
+        DS.getData(user, (dataset) => {
+
+            if(!dataset){
+                console.log("Saved todos doesn`t found");
+                return;
+            }
+            if(dataset.data){
+                dataset = dataset.data;
+            }
+
+            // console.log(dataset);
+            for(let i = 0; i < dataset.length; i++){
+                this.addTodo(dataset[i].text, dataset[i].isActive, dataset[i].id);
+            }
+        });
     }
 });
-
-
-let requestData = function(context, cb){
-    let data = null;
-    let error = false;
-
-    axios
-        .get('http://jsonplaceholder.typicode.com/todos')
-        .then(response => {
-            data = response.data;
-        })
-        .catch(error => {
-            error = true;
-        })
-        .finally(() => ( cb(context, error, data) ));
-
-}
