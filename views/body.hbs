@@ -23,7 +23,7 @@
 
         <div class="popup" v-else-if="loginView">
             <form v-on:submit.prevent="loginFormSubmit">
-                <input type="text" placeholder="Login" name="login" v-model="loginForm.login">
+                <input type="text" placeholder="Name" name="login" v-model="loginForm.login">
                 <input type="password" placeholder="Password" name="password" v-model="loginForm.password">
                 <button type="submit" v-bind:disabled="! loginFormValidation">Sign in</button>
                 <span class="status-info">\{{ loginForm.infoText }}</span>
@@ -32,7 +32,7 @@
 
         <div class="popup" v-else-if="registerView">
             <form v-on:submit.prevent="registerFormSubmit">
-                <input type="text" placeholder="Login" name="login" v-model="registerForm.login">
+                <input type="text" placeholder="Name" name="login" v-model="registerForm.login">
                 <input type="password" placeholder="Password" name="password" v-model="registerForm.password">
                 <input type="password" placeholder="Confirm password" name="password_confirm" v-model="registerForm.passwordConfirm">
                 <button type="submit" v-bind:disabled="! registerFormValidation">Register</button>
@@ -63,7 +63,7 @@
                 </span>
 
                 <span v-else class="user">
-                    Logged as: <span class="username">\{{user}}</span>
+                    Logged as: <span class="username">\{{user.name}}</span>
                     
                     <button v-on:click.prevent="signout">
                         <i class="fas fa-sign-out-alt"></i>

@@ -48,7 +48,10 @@ let app = new Vue({
         loginView: false,
         registerView: false,
         logged: false,
-        user: {},
+        user: {
+            name: '',
+            id: ''
+        },
         loginForm: {
             login: "",
             password: "",
@@ -92,47 +95,155 @@ let app = new Vue({
         }
     },
     methods:{
-        addTodo: function(todoText, active = true, id = null){
+        addTodo: function(todoText, active = true, isnew = true, serverid = ''){
 
             if(typeof todoText == undefined || typeof todoText == 'object'){
                 todoText = this.nextTodoText;
                 this.nextTodoText = '';
             }
-
-            if(id == null) {
-                id = this.nextTodoId++;
-            }
-            else{
-                this.nextTodoId = id + 1;
-            }
-
+            
+            id = this.nextTodoId++;
+            
             this.todoList.push({
                 text: todoText.trim(), 
                 isActive: active,
-                id
+                id,
+                serverID: serverid,
             });
 
             DS.saveData(this.user, this.todoList);
+            
+            if(isnew && this.user && this.user.name) {
+                axios.post('/todos/add', {
+                    userID: this.user.id,
+                    text: todoText
+                })
+                .then((res) => {
+                    console.log('Added sucesfully: ', res);
+                    var length = this.todoList.length;
+                    this.todoList[length-1]['serverID'] = res.data._id;
+                    DS.saveData(this.user, this.todoList);
+                })
+                .catch((err) => {
+                    console.log(err);
+                })
+            }
         },
         deleteTodo: function(id){
+            
+            if(this.user && this.user.name) {
+                axios.post('/todos/delete', {
+                    userID: this.user.id,
+                    todoID: this.todoList[id].serverID
+                })
+                .then((res) => {
+                    console.log('Deleted sucesfully: ', res);
+                })
+                .catch((err) => {
+                    console.log(err);
+                })
+            }
+
             this.todoList.splice(id, 1);
 
             DS.saveData(this.user, this.todoList);
+
         },
         toggleTodo: function(id){
             this.todoList[id].isActive = ! this.todoList[id].isActive;
-            
+
             DS.saveData(this.user, this.todoList);
+
+            if(this.user && this.user.name) {
+                axios.post('/todos/toggle', {
+                    userID: this.user.id,
+                    todoID: this.todoList[id].serverID
+                })
+                .then((res) => {
+                    console.log('Toggled sucesfully: ', res);
+                })
+                .catch((err) => {
+                    console.log(err);
+                })
+            }
         },
+
         loginFormSubmit: function(){
-            console.log(this.loginForm.login);
-            console.log(this.loginForm.password);
+            console.log('Sending login req');
+
+
+            axios.post('/user/login', {
+                login: this.loginForm.login,
+                password: this.loginForm.password
+            })
+            .then((res) => {
+                console.log(res);
+                this.login(res.data);
+            })
+            .catch((err) => {
+                console.log(err);
+            })
+
         },
         registerFormSubmit: function(){
-            console.log(this.registerForm.login);
-            console.log(this.registerForm.password);
-            console.log(this.registerForm.passwordConfirm);
+            console.log('Sending reqister req');
+
+
+            axios.post('/user/register', {
+                login: this.registerForm.login,
+                password: this.registerForm.password,
+                passwordConfirm: this.registerForm.passwordConfirm
+            })
+            .then((res) => {
+                console.log(res);
+                this.login(res.data);
+            })
+            .catch((err) => {
+                console.log(err);
+            })
         },
+
+        login: function(data){
+            this.user.name = data.username;
+            this.user.id = data._id;
+            this.logged = true;
+
+            DS.saveUser(this.user);
+
+            this.openTodoView();
+
+            this.todoList = [];
+            for(let i = 0; i < data.todoList.length; i++){
+                this.addTodo(data.todoList[i].text, data.todoList[i].visible, false, data.todoList[i]._id);
+            }
+        },
+        signout: function(){
+
+            console.log('signeout ', this.user.name);
+            DS.removeData(this.user);
+            DS.removeUser();
+
+            this.user = {};
+            this.logged = false;
+            this.openTodoView();
+
+            
+            this.todoList = [];
+            DS.getData(null, (dataset) => {
+
+                if(!dataset){
+                    console.log("Saved todos doesn`t found");
+                    return;
+                }
+                if(dataset.data) { dataset = dataset.data; }
+    
+                for(let i = 0; i < dataset.length; i++){
+                    this.addTodo(dataset[i].text, dataset[i].isActive, false);
+                }
+            });
+        },
+
+
         openLoginForm: function(){
             if( ! this.loginView ){
                 this.loginView = true;
@@ -174,17 +285,17 @@ let app = new Vue({
             this.closeLoginForm();
             this.closeRegisterForm();
         },
-        signout: function(){
-            this.user = {};
-            this.logged = false;
-            this.openTodoView();
-        },
     },
     mounted() {
-        console.log('mounted');
 
         // DS.clearStorage();
         let user = DS.getUser();
+        console.log(user);
+        if(user && user.name) {
+            this.user.name = user.name;
+            this.user.id = user.id;
+            this.logged = true;
+        }
         DS.getData(user, (dataset) => {
 
             if(!dataset){
@@ -195,9 +306,9 @@ let app = new Vue({
                 dataset = dataset.data;
             }
 
-            // console.log(dataset);
             for(let i = 0; i < dataset.length; i++){
-                this.addTodo(dataset[i].text, dataset[i].isActive, dataset[i].id);
+                var sId = dataset[i].serverID ? dataset[i].serverID : '';
+                this.addTodo(dataset[i].text, dataset[i].isActive, false, sId);
             }
         });
     }

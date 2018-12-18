@@ -20,6 +20,11 @@ class DS{
         return data;
     }
 
+    static removeUser(){
+        let key = USER_DATA_KEY;
+        localStorage.removeItem(key);
+    }
+
         // save data in local storage and send it to server
     static saveData(user, data){
         let dataset = {
@@ -62,9 +67,9 @@ class DS{
         if(user && user.name){
             key = user.name;
         }
-
         localStorage.removeItem(key);
     }
+
 
     static clearStorage(){
         localStorage.clear();
